@@ -3,7 +3,7 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - production
+      - main
  
 jobs:          
   request-production-deployment:
@@ -26,34 +26,34 @@ jobs:
         issue-body: "Please approve or deny the deployment"
         exclude-workflow-initiator-as-approver: false
 
-  deploy-to-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: request-production-deployment
+  # deploy-to-production:
+  #   name: Deploy to Production
+  #   runs-on: ubuntu-latest
+  #   needs: request-production-deployment
  
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
  
-    - name: Deploy to Production Server
-      uses: appleboy/ssh-action@master
+  #   - name: Deploy to Production Server
+  #     uses: appleboy/ssh-action@master
 
-      with:
-        host: ${{ secrets.PROD_HOST }}
-        username: ${{ secrets.PROD_USERNAME }}
-        password: ${{ secrets.PROD_PASSWORD }}
+  #     with:
+  #       host: ${{ secrets.PROD_HOST }}
+  #       username: ${{ secrets.PROD_USERNAME }}
+  #       password: ${{ secrets.PROD_PASSWORD }}
 
-        script: |
-            set -e # Exit immediately if a command fails
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            cd /var/www/mediusware-com-v2
-            git reset --hard || { echo "Git reset failed"; exit 1; }
-            git fetch origin || { echo "Git fetch failed"; exit 1; }
-            git reset --hard origin/production || { echo "Git pull failed"; exit 1; }
-            npm install || { echo "npm install failed"; exit 1; }
-            npm run build || { echo "Build failed"; exit 1; }
-            supervisorctl restart mediusware.com
+  #       script: |
+  #           set -e # Exit immediately if a command fails
+  #           export NVM_DIR=~/.nvm
+  #           source ~/.nvm/nvm.sh
+  #           cd /var/www/mediusware-com-v2
+  #           git reset --hard || { echo "Git reset failed"; exit 1; }
+  #           git fetch origin || { echo "Git fetch failed"; exit 1; }
+  #           git reset --hard origin/production || { echo "Git pull failed"; exit 1; }
+  #           npm install || { echo "npm install failed"; exit 1; }
+  #           npm run build || { echo "Build failed"; exit 1; }
+  #           supervisorctl restart mediusware.com
 
 steps:
   - uses: trstringer/manual-approval@v1
