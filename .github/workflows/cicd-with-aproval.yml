@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
- 
+      
 jobs:          
   request-production-deployment:
     name: Request Production Deployment
@@ -25,6 +25,15 @@ jobs:
         issue-title: "Deploying to production from staging."
         issue-body: "Please approve or deny the deployment"
         exclude-workflow-initiator-as-approver: false
+  hello-world-job:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Print Hello World
+      run: echo "Hello, World!"
 
   # deploy-to-production:
   #   name: Deploy to Production
@@ -65,5 +74,5 @@ jobs:
 #       issue-body: "Please approve or deny the deployment of version v1.3.5."
 #       exclude-workflow-initiator-as-approver: false
 #       fail-on-denial: true
-      additional-approved-words: ''
-      additional-denied-words: ''
+      # additional-approved-words: ''
+      # additional-denied-words: ''
