@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
+  issues: write
       
 jobs:          
   request-production-deployment:
@@ -25,6 +29,7 @@ jobs:
         issue-title: "Deploying to production from staging."
         issue-body: "Please approve or deny the deployment"
         exclude-workflow-initiator-as-approver: false
+  
   hello-world-job:
     name: Print Hello world
     runs-on: ubuntu-latest
