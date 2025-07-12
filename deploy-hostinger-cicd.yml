@@ -1,0 +1,53 @@
+name: Build and Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - dev  # or your deployment branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Build project
+        run: npm run build
+
+      - name: Ensure dist/ exists
+        run: ls -la dist/
+
+      - name: Remove old files
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.SSH_DEV_TARGET_DIR }}
+            echo "Current path: $(pwd)"
+            find /home/my-pc/Music/ -mindepth 1 -maxdepth 1 ! -name 'demo' -exec echo rm -rf {} +
+            echo "✅ All files and directories removed"
+
+      - name: Deploy dist file
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "dist/**"
+          target: "${{ secrets.SSH_DEV_TARGET_DIR }}"
+          strip_components: 1
+          overwrite: true
