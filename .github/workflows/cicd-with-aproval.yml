@@ -18,10 +18,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Show last commit message
+    - name: Get last commit message
+      id: last_commit
       run: |
-        echo "Last commit message:"
-        git log -1 --pretty=format:"%h - %s (%an)"
+        msg=$(git log -1 --pretty=format:"%h - %s (%an)")
+        echo "message=$msg" >> $GITHUB_OUTPUT
         
     - name: Create Deployment Request
       run: echo "Deployment to production server needs approval ."
@@ -35,7 +36,11 @@ jobs:
         approvers: mazibinfo
         minimum-approvals: 1
         issue-title: "Deploying to production from staging."
-        issue-body: "Please approve or deny the deployment"
+        issue-body: |
+          Please approve or deny the deployment.
+
+          **Last Commit:**
+          ${{ steps.last_commit.outputs.message }}
         exclude-workflow-initiator-as-approver: false
   
   hello-world-job:
